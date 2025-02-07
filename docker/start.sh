@@ -1,4 +1,3 @@
-  GNU nano 7.2                                                       start.sh
 #!/bin/bash
 
 # Controleer of de REPO_URL variabele is ingesteld
