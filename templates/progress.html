@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Processing Progress</title>
+    <script>
+        function checkProgress(taskId) {
+            fetch(`/progress/${taskId}/status`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.progress !== undefined) {
+                        document.getElementById('progress').innerText = `Progress: ${data.progress.toFixed(2)}%`;
+                        if (data.progress < 100) {
+                            setTimeout(() => checkProgress(taskId), 1000);
+                        } else {
+                            window.location.href = `/results/${taskId}`;
+                        }
+                    } else {
+                        document.getElementById('progress').innerText = 'Error fetching progress!';
+                    }
+                });
+        }
+    </script>
+</head>
+<body onload="checkProgress('{{ task_id }}')">
+    <h1>Processing Hostnames</h1>
+    <p id="progress">Progress: 0%</p>
+</body>
+</html>

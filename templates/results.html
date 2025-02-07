@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+</head>
+<body>
+    <h1>Hostname Check Results</h1>
+    <table border="1">
+        <tr>
+            <th>Hostname</th>
+            <th>IP Addresses</th>
+            <th>HTTP Status</th>
+            <th>HTTP Redirect</th>
+            <th>HTTP Page Title</th>
+            <th>HTTPS Status</th>
+            <th>HTTPS Redirect</th>
+            <th>HTTPS Page Title</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.hostname }}</td>
+            <td>{{ result.ips }}</td>
+            <td>{{ result.status_http }}</td>
+            <td>{{ result.redirect_http or 'None' }}</td>
+            <td>{{ result.title_http }}</td>
+            <td>{{ result.status_https }}</td>
+            <td>{{ result.redirect_https or 'None' }}</td>
+            <td>{{ result.title_https }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/">Upload Another File</a>
+</body>
+</html>
