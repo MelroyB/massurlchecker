@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, jsonify, redirect, url_for
+from flask import Flask, request, render_template, jsonify, redirect, url_for, send_file
 import requests
 import threading
 import time
 import socket
+import csv
+import io
 
 app = Flask(__name__)
 
@@ -100,9 +102,35 @@ def get_progress(task_id):
 @app.route('/results/<task_id>', methods=['GET'])
 def results(task_id):
     if task_id in results_store:
-        return render_template('results.html', results=results_store[task_id])
+        return render_template('results.html', results=results_store[task_id], task_id=task_id)
     else:
         return "Results not found", 404
+
+@app.route('/download/<task_id>', methods=['GET'])
+def download_csv(task_id):
+    if task_id not in results_store:
+        return "Results not found", 404
+
+    # Create a CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Hostname', 'IP Addresses', 'HTTP Status', 'HTTP Redirect', 'HTTP Page Title',
+                     'HTTPS Status', 'HTTPS Redirect', 'HTTPS Page Title'])
+
+    for result in results_store[task_id]:
+        writer.writerow([
+            result['hostname'],
+            result['ips'],
+            result['status_http'],
+            result['redirect_http'] or 'None',
+            result['title_http'],
+            result['status_https'],
+            result['redirect_https'] or 'None',
+            result['title_https']
+        ])
+
+    output.seek(0)
+    return send_file(output, mimetype='text/csv', as_attachment=True, download_name='results.csv')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
