@@ -111,8 +111,8 @@ def download_csv(task_id):
     if task_id not in results_store:
         return "Results not found", 404
 
-    # Create a CSV in memory
-    output = io.StringIO()
+    # Create a CSV in memory using BytesIO
+    output = io.BytesIO()
     writer = csv.writer(output)
     writer.writerow(['Hostname', 'IP Addresses', 'HTTP Status', 'HTTP Redirect', 'HTTP Page Title',
                      'HTTPS Status', 'HTTPS Redirect', 'HTTPS Page Title'])
@@ -129,7 +129,10 @@ def download_csv(task_id):
             result['title_https']
         ])
 
+    # Move the cursor to the beginning of the BytesIO object
     output.seek(0)
+
+    # Return the file as a downloadable response
     return send_file(output, mimetype='text/csv', as_attachment=True, download_name='results.csv')
 
 if __name__ == '__main__':
